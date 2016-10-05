@@ -136,7 +136,8 @@ class LogStash::Filters::KubernetesMetadata < LogStash::Filters::Base
       begin
         response = RestClient.get(url)
       rescue RestClient::ResourceNotFound
-        @logger.warn("Kubernetes returned an error while querying the API")
+        @logger.debug("Kubernetes returned an error while querying the API")
+        return nil
       end
 
       if response.code != 200
