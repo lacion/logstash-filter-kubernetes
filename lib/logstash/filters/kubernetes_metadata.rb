@@ -46,6 +46,7 @@ class LogStash::Filters::KubernetesMetadata < LogStash::Filters::Base
     @logger.debug("path is: " + path.to_s)
     @logger.debug("config is: " + config.to_s)
 
+
     unless config = lookup_cache[path]
       kubernetes = get_file_info(path)
 
@@ -64,6 +65,9 @@ class LogStash::Filters::KubernetesMetadata < LogStash::Filters::Base
         set_log_formats(metadata)
         lookup_cache[path] = metadata
       end
+
+
+
     end
 
     event[@target] = metadata
@@ -130,31 +134,44 @@ class LogStash::Filters::KubernetesMetadata < LogStash::Filters::Base
   end
 
   def get_kubernetes(namespace, pod)
-    begin
-      url = [ @api, 'api/v1/namespaces', namespace, 'pods', pod ].join("/")
+    
 
+    url = [ @api, 'api/v1/namespaces', namespace, 'pods', pod ].join("/")
+
+    unless apiResponse = lookup_cache[url]
       begin
-        response = RestClient.get(url)
-      rescue RestClient::ResourceNotFound
-        @logger.debug("Kubernetes returned an error while querying the API")
-        return nil
+        begin
+          response = RestClient.get(url)
+          apiResponse = response.body
+          lookup_cache[url] = apiResponse
+        rescue RestClient::ResourceNotFound
+          @logger.debug("Kubernetes returned an error while querying the API")
+          return nil
+        end
+
+        if response.code != 200
+          @logger.warn("Non 200 response code returned: #{response.code}")
+        end
+
+        return nil unless response.code == 200
+
+        data = LogStash::Json.load(apiResponse)
+
+        {
+          'annotations' => sanatize_keys(data['metadata']['annotations']),
+          'labels' => sanatize_keys(data['metadata']['labels'])
+        }
+      rescue => e
+        @logger.warn("Unknown error while getting Kubernetes metadata: #{e}")
       end
-
-      if response.code != 200
-        @logger.warn("Non 200 response code returned: #{response.code}")
-      end
-
-      return nil unless response.code == 200
-
-      data = LogStash::Json.load(response.body)
-
-      {
-        'annotations' => sanatize_keys(data['metadata']['annotations']),
-        'labels' => sanatize_keys(data['metadata']['labels'])
-      }
-    rescue => e
-      @logger.warn("Unknown error while getting Kubernetes metadata: #{e}")
     end
+
+    data = LogStash::Json.load(apiResponse)
+    {
+      'annotations' => sanatize_keys(data['metadata']['annotations']),
+      'labels' => sanatize_keys(data['metadata']['labels'])
+    }
+
   end
 
 end
