@@ -2,4 +2,4 @@
 
 /opt/logstash/bin/logstash-plugin install /src/*.gem
 
-logstash --allow-env -f /src/test/logstash.conf
+logstash --allow-env -f /src/test/logstash.conf --debug
