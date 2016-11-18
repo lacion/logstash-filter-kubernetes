@@ -13,7 +13,6 @@ init: clean
 package:
 	docker run --rm -v $(CURDIR):/src -w "/src" jruby:1.7.23 gem build $(GEM_NAME).gemspec
 
-
 test:
 	docker run -it --rm \
 		-e "KUBE_API=http://$(shell minikube ip):8080" \
