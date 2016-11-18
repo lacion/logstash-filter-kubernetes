@@ -3,7 +3,7 @@
 GEM_NAME := "logstash-filter-kubernetes-metadata"
 
 clean:
-	-echo n | minikube delete
+	-minikube delete
 
 init:
 
