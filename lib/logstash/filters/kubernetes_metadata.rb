@@ -45,9 +45,13 @@ class LogStash::Filters::KubernetesMetadata < LogStash::Filters::Base
 
     @logger.debug("path is: " + path.to_s)
     @logger.debug("config is: " + config.to_s)
+    @logger.debug("lookup_cache is: " + lookup_cache[path].to_s)
 
-
-    unless config = lookup_cache[path]
+    if lookup_cache[path]
+      @logger.debug("metadata cache hit")
+      metadata = lookup_cache[path]
+    else
+      @logger.debug("metadata cache miss")
       kubernetes = get_file_info(path)
 
       return unless kubernetes
@@ -65,9 +69,6 @@ class LogStash::Filters::KubernetesMetadata < LogStash::Filters::Base
         set_log_formats(metadata)
         lookup_cache[path] = metadata
       end
-
-
-
     end
 
     event[@target] = metadata
@@ -76,7 +77,6 @@ class LogStash::Filters::KubernetesMetadata < LogStash::Filters::Base
 
   def set_log_formats(metadata)
     begin
-      #return if metadata['annotations'].empty?
 
       format = {
         'stderr' => @default_log_format,
