@@ -5,15 +5,14 @@ GEM_NAME := "logstash-filter-kubernetes-metadata"
 clean:
 	-minikube delete
 
-init:
+init: clean 
+	minikube start --extra-config apiserver.InsecureBindAddress=0.0.0.0
+	@sleep 3
+	kubectl create -f test/hello.pod.yml
 
 package:
 	docker run --rm -v $(CURDIR):/src -w "/src" jruby:1.7.23 gem build $(GEM_NAME).gemspec
 
-setup: clean 
-	minikube start --extra-config apiserver.InsecureBindAddress=0.0.0.0
-	@sleep 3
-	kubectl create -f test/hello.pod.yml
 
 test:
 	docker run -it --rm \
