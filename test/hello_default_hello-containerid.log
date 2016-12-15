@@ -1,0 +1,10 @@
+{"log":"message 0","stream":"stdout","time":"2016-11-17T10:49:09.000000000Z"}
+{"log":"message 1","stream":"stdout","time":"2016-11-17T10:49:09.100000000Z"}
+{"log":"message 2","stream":"stdout","time":"2016-11-17T10:49:09.200000000Z"}
+{"log":"message 3","stream":"stdout","time":"2016-11-17T10:49:09.300000000Z"}
+{"log":"message 4","stream":"stdout","time":"2016-11-17T10:49:09.400000000Z"}
+{"log":"message 5","stream":"stdout","time":"2016-11-17T10:49:09.500000000Z"}
+{"log":"message 6","stream":"stdout","time":"2016-11-17T10:49:09.600000000Z"}
+{"log":"message 7","stream":"stdout","time":"2016-11-17T10:49:09.700000000Z"}
+{"log":"message 8","stream":"stdout","time":"2016-11-17T10:49:09.800000000Z"}
+{"log":"message 9","stream":"stdout","time":"2016-11-17T10:49:09.900000000Z"}
